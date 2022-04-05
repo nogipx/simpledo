@@ -1,5 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 void main() {
-  runApp(const SizedBox());
+  runZonedGuarded(
+    () {
+      runApp(const SizedBox());
+    },
+    (error, stackTrace) {},
+  );
 }

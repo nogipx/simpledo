@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:meta/meta.dart';
+import 'package:test_task/data/dto/task_hive_dto.dart';
 import 'package:uuid/uuid.dart';
 
 @immutable
@@ -10,7 +11,7 @@ class Task {
   final String id;
 
   @override
-  int get hashCode => hashValues(runtimeType, id);
+  int get hashCode => Object.hash(runtimeType, id);
 
   const Task._({
     required this.creationTime,
@@ -31,6 +32,14 @@ class Task {
       id: const Uuid().v4(),
     );
   }
+
+  factory Task.fromDto(TaskHiveDto dto) => Task._(
+        creationTime: dto.creationTime,
+        editTime: dto.editTime,
+        content: dto.content,
+        isCompleted: dto.isCompleted,
+        id: dto.id,
+      );
 
   @override
   bool operator ==(Object other) {
