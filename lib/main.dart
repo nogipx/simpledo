@@ -16,7 +16,7 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.dark,
     statusBarColor: Colors.white,
     statusBarBrightness: Brightness.light,
-    statusBarIconBrightness: Brightness.dark,
+    statusBarIconBrightness: Brightness.light,
   ));
 
   WidgetsFlutterBinding.ensureInitialized();

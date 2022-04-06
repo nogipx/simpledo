@@ -17,10 +17,10 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
 
   @override
   Widget build(MainScreenWM wm) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
           children: [
             const SizedBox(height: 20),
             SizedBox(
