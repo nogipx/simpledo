@@ -20,10 +20,22 @@ class TaskService {
   }
 
   List<Task> getTasksByDay(DateTime day) {
-    final tasksByDay = _taskBox.values
-        .where((e) => e.creationTime.isSameDay(day))
-        .map((e) => Task.fromDto(e))
-        .toList();
+    final storageTasks =
+        _taskBox.values.where((e) => e.creationTime.isSameDay(day)).toList()
+          ..sort((a, b) {
+            if (a.order == null && b.order == null) {
+              return 0;
+            }
+            if (a.order == null) {
+              return 1;
+            }
+            if (b.order == null) {
+              return -1;
+            }
+            return a.order!.compareTo(b.order!);
+          });
+
+    final tasksByDay = storageTasks.map((e) => Task.fromDto(e)).toList();
     return tasksByDay;
   }
 
@@ -31,12 +43,15 @@ class TaskService {
       _taskBox.put(task.id, TaskHiveDto.fromEntity(task));
 
   Future<void> saveAllTasks(List<Task> tasks) async {
-    final mapTasks = Map.fromEntries(tasks.map(
-      (e) => MapEntry(
-        e.id,
-        TaskHiveDto.fromEntity(e),
-      ),
-    ));
+    final mapTasks = Map.fromEntries(tasks.asMap().entries.map(
+          (e) => MapEntry(
+            e.value.id,
+            TaskHiveDto.fromEntity(
+              e.value,
+              order: e.key,
+            ),
+          ),
+        ));
     await _taskBox.putAll(mapTasks);
   }
 

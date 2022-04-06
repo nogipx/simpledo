@@ -4,7 +4,7 @@ import 'package:test_task/data/hive_types.dart';
 
 part 'task_hive_dto.g.dart';
 
-@HiveType(typeId: HiveTypes.task)
+@HiveType(typeId: HiveTypes.taskId)
 class TaskHiveDto {
   @HiveField(0)
   final DateTime creationTime;
@@ -16,6 +16,8 @@ class TaskHiveDto {
   final bool isCompleted;
   @HiveField(4)
   final String id;
+  @HiveField(5)
+  final int? order;
 
   TaskHiveDto({
     required this.creationTime,
@@ -23,15 +25,17 @@ class TaskHiveDto {
     required this.content,
     required this.isCompleted,
     required this.id,
+    this.order,
   });
 
-  factory TaskHiveDto.fromEntity(Task obj) {
+  factory TaskHiveDto.fromEntity(Task obj, {int? order}) {
     return TaskHiveDto(
       creationTime: obj.creationTime,
       editTime: obj.editTime,
       content: obj.content,
       isCompleted: obj.isCompleted,
       id: obj.id,
+      order: order,
     );
   }
 }

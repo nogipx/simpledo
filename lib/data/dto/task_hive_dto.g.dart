@@ -20,15 +20,16 @@ class TaskHiveDtoAdapter extends TypeAdapter<TaskHiveDto> {
       creationTime: fields[0] as DateTime,
       editTime: fields[1] as DateTime,
       content: fields[2] as String,
-      id: fields[4] as String,
       isCompleted: fields[3] as bool,
+      id: fields[4] as String,
+      order: fields[5] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, TaskHiveDto obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.creationTime)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class TaskHiveDtoAdapter extends TypeAdapter<TaskHiveDto> {
       ..writeByte(3)
       ..write(obj.isCompleted)
       ..writeByte(4)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(5)
+      ..write(obj.order);
   }
 
   @override
