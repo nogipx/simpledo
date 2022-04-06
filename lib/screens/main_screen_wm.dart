@@ -1,5 +1,5 @@
 import 'package:elementary/elementary.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:test_task/data/export.dart';
 import 'package:test_task/di.dart';
 import 'package:test_task/helpers/date_time_extension.dart';
@@ -18,6 +18,9 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
   final EntityStateNotifier<DayTasksState> tasksState = EntityStateNotifier();
   ValueNotifier<Set<DateTime>> datesContainingTasks = ValueNotifier({});
 
+  late PageController dayPageScrollController;
+  late ScrollController daySelectionScrollController;
+
   DateTime get now => DateTime.now();
   DateTime get weekBeforeNow => now.subtract(const Duration(days: 7));
   DateTime get weekAfterNow => now.add(const Duration(days: 7));
@@ -27,13 +30,24 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
   @override
   void initWidgetModel() {
     super.initWidgetModel();
+    dayPageScrollController = PageController(initialPage: 7);
+    daySelectionScrollController =
+        ScrollController(initialScrollOffset: 7 * 55);
     pullDayTasks(now);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    dayPageScrollController.dispose();
+    daySelectionScrollController.dispose();
   }
 
   void pullDayTasks(DateTime day) {
     tasksState.loading(tasksState.value?.data);
     final tasks = model.getTasksByDay(day);
     final newState = DayTasksState(day, tasks);
+
     tasksState.content(newState);
     datesContainingTasks.value = getDatesContainingTasks();
   }
@@ -98,6 +112,29 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
         .map((e) => e.targetDate.onlyDate)
         .toSet();
     return filtered;
+  }
+
+  void selectDay(DateTime day) {
+    final dayPosition =
+        weekBeforeNow.onlyDate.difference(day.onlyDate).inDays.abs();
+    daySelectionScrollController.animateTo(
+      dayPosition * 55,
+      curve: Curves.linearToEaseOut,
+      duration: const Duration(milliseconds: 300),
+    );
+    pullDayTasks(day);
+  }
+
+  void onPageChanged(int page) {
+    final selectedDate = tasksState.value?.data?.day;
+    final dayPosition =
+        selectedDate!.onlyDate.difference(weekBeforeNow).inDays.abs();
+    final diff = page - dayPosition;
+    final targetDate = diff > 0
+        ? selectedDate.add(const Duration(days: 1))
+        : selectedDate.subtract(const Duration(days: 1));
+
+    selectDay(targetDate);
   }
 }
 
