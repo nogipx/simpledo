@@ -18,6 +18,8 @@ void main() {
     statusBarBrightness: Brightness.light,
     statusBarIconBrightness: Brightness.dark,
   ));
+
+  WidgetsFlutterBinding.ensureInitialized();
   runZonedGuarded(
     () async {
       final app = Injector(
@@ -25,7 +27,12 @@ void main() {
       );
       await app.init();
       runApp(MaterialApp(
-        home: app,
+        home: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 600,
+          ),
+          child: app,
+        ),
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: const ColorScheme.light(),

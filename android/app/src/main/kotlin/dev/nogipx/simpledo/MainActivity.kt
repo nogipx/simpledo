@@ -1,4 +1,4 @@
-package dev.nogipx.testtask.test_task
+package dev.nogipx.simpledo
 
 import io.flutter.embedding.android.FlutterActivity
 
