@@ -9,7 +9,10 @@ class MainScreenModel extends ElementaryModel {
 
   List<Task> getTasksByDay(DateTime day) => _taskService.getTasksByDay(day);
 
+  List<Task> getAllTasks() => _taskService.getAllTasks();
+
   Future<void> saveTask(Task task) => _taskService.saveTask(task);
+
   Future<void> saveAllTasks(List<Task> tasks) =>
       _taskService.saveAllTasks(tasks);
 

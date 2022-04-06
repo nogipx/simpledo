@@ -18,10 +18,13 @@ class TaskHiveDto {
   final String id;
   @HiveField(5)
   final int? order;
+  @HiveField(6)
+  final DateTime targetDate;
 
   TaskHiveDto({
     required this.creationTime,
     required this.editTime,
+    required this.targetDate,
     required this.content,
     required this.isCompleted,
     required this.id,
@@ -32,6 +35,7 @@ class TaskHiveDto {
     return TaskHiveDto(
       creationTime: obj.creationTime,
       editTime: obj.editTime,
+      targetDate: obj.targetDate,
       content: obj.content,
       isCompleted: obj.isCompleted,
       id: obj.id,

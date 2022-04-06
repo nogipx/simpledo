@@ -14,27 +14,34 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
   Widget build(MainScreenWM wm) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => wm.createNewTask(''),
+        onPressed: () => wm.createNewTask(
+          content: '',
+          targetDate: wm.tasksState.value?.data?.day ?? DateTime.now(),
+        ),
         child: const Icon(Icons.add),
       ),
       body: Column(
         children: [
-          Container(
-            color: Colors.red,
-            height: 100,
+          SizedBox(
+            height: 80,
             child: EntityStateNotifierBuilder<DayTasksState>(
               listenableEntityState: wm.tasksState,
               builder: (context, data) {
-                return ListView.builder(
+                return ListView.separated(
                   itemCount: 14,
                   scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  primary: false,
+                  separatorBuilder: (_, __) => const SizedBox(width: 4),
                   itemBuilder: (context, index) {
                     final day = wm.weekBeforeNow.add(Duration(days: index));
 
                     return DayButton(
                       day: day,
-                      isToday: data?.day.isSameDay(day) ?? false,
+                      isSelected: data?.day.isSameDay(day) ?? false,
                       onTap: () => wm.pullDayTasks(day),
+                      hasTasks:
+                          wm.datesContainingTasks.value.contains(day.onlyDate),
                     );
                   },
                 );

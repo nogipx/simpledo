@@ -3,6 +3,8 @@ extension ExtDateTime on DateTime {
     return year == other.year && month == other.month && day == other.day;
   }
 
+  DateTime get onlyDate => DateTime(year, month, day);
+
   String get shortWeekDay {
     switch (weekday) {
       case 1:

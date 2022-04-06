@@ -1,8 +1,8 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:test_task/data/export.dart';
 import 'package:test_task/di.dart';
+import 'package:test_task/helpers/date_time_extension.dart';
 import 'package:test_task/screens/main_screel_model.dart';
 import 'package:test_task/screens/main_screen.dart';
 
@@ -16,9 +16,11 @@ class DayTasksState {
 
 class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
   final EntityStateNotifier<DayTasksState> tasksState = EntityStateNotifier();
+  ValueNotifier<Set<DateTime>> datesContainingTasks = ValueNotifier({});
 
   DateTime get now => DateTime.now();
   DateTime get weekBeforeNow => now.subtract(const Duration(days: 7));
+  DateTime get weekAfterNow => now.add(const Duration(days: 7));
 
   MainScreenWM(MainScreenModel model) : super(model);
 
@@ -33,28 +35,34 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     final tasks = model.getTasksByDay(day);
     final newState = DayTasksState(day, tasks);
     tasksState.content(newState);
+    datesContainingTasks.value = getDatesContainingTasks();
   }
 
-  Future<void> createNewTask(String content) async {
-    final task = Task.create(content: content);
+  Future<void> createNewTask({
+    required String content,
+    required DateTime targetDate,
+  }) async {
+    final task = Task.create(content: content, targetDate: targetDate);
     tasksState.loading(tasksState.value?.data);
     await model.saveTask(task);
-    final tasks = model.getTasksByDay(task.creationTime);
-    tasksState.content(DayTasksState(task.creationTime, tasks));
+    final tasks = model.getTasksByDay(task.targetDate);
+    tasksState.content(DayTasksState(task.targetDate, tasks));
+    datesContainingTasks.value = getDatesContainingTasks();
   }
 
   Future<void> editTask(Task task) async {
     tasksState.loading(tasksState.value?.data);
     await model.saveTask(task);
-    final tasks = model.getTasksByDay(task.creationTime);
-    tasksState.content(DayTasksState(task.creationTime, tasks));
+    final tasks = model.getTasksByDay(task.targetDate);
+    tasksState.content(DayTasksState(task.targetDate, tasks));
   }
 
   Future<void> deleteTask(Task task) async {
     tasksState.loading(tasksState.value?.data);
     await model.deleteTask(task);
-    final tasks = model.getTasksByDay(task.creationTime);
-    tasksState.content(DayTasksState(task.creationTime, tasks));
+    final tasks = model.getTasksByDay(task.targetDate);
+    tasksState.content(DayTasksState(task.targetDate, tasks));
+    datesContainingTasks.value = getDatesContainingTasks();
   }
 
   Future<void> reorderTasks({
@@ -72,6 +80,24 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
 
     tasksState.content(DayTasksState(data.day, currentTasks));
     await model.saveAllTasks(currentTasks);
+  }
+
+  Set<DateTime> getDatesContainingTasks({
+    DateTime? begin,
+    DateTime? end,
+  }) {
+    final beginDate = begin ?? weekBeforeNow;
+    final endDate = end ?? weekAfterNow;
+
+    final all = model.getAllTasks();
+    final filtered = all
+        .where((e) {
+          return e.targetDate.isAfter(beginDate) &&
+              e.targetDate.isBefore(endDate);
+        })
+        .map((e) => e.targetDate.onlyDate)
+        .toSet();
+    return filtered;
   }
 }
 

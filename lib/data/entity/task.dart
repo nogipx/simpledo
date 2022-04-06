@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 class Task {
   final DateTime creationTime;
   final DateTime editTime;
+  final DateTime targetDate;
   final String content;
   final bool isCompleted;
   final String id;
@@ -16,6 +17,7 @@ class Task {
   const Task._({
     required this.creationTime,
     required this.editTime,
+    required this.targetDate,
     required this.content,
     required this.id,
     this.isCompleted = false,
@@ -23,11 +25,13 @@ class Task {
 
   factory Task.create({
     required String content,
+    DateTime? targetDate,
   }) {
     final now = DateTime.now();
     return Task._(
       creationTime: now,
       editTime: now,
+      targetDate: targetDate ?? now,
       content: content,
       id: const Uuid().v4(),
     );
@@ -36,6 +40,7 @@ class Task {
   factory Task.fromDto(TaskHiveDto dto) => Task._(
         creationTime: dto.creationTime,
         editTime: dto.editTime,
+        targetDate: dto.targetDate,
         content: dto.content,
         isCompleted: dto.isCompleted,
         id: dto.id,
@@ -53,6 +58,7 @@ class Task {
       Task._(
         creationTime: creationTime,
         editTime: DateTime.now(),
+        targetDate: targetDate,
         content: content != null && content.isNotEmpty ? content : this.content,
         id: id,
         isCompleted: isCompleted ?? this.isCompleted,

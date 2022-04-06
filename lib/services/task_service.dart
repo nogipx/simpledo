@@ -21,7 +21,7 @@ class TaskService {
 
   List<Task> getTasksByDay(DateTime day) {
     final storageTasks =
-        _taskBox.values.where((e) => e.creationTime.isSameDay(day)).toList()
+        _taskBox.values.where((e) => e.targetDate.isSameDay(day)).toList()
           ..sort((a, b) {
             if (a.order == null && b.order == null) {
               return 0;
