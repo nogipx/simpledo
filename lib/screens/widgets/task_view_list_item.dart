@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:test_task/data/export.dart';
@@ -37,19 +36,23 @@ class _TaskViewListItemState extends State<TaskViewListItem>
   late final ValueNotifier<bool> _hasEditFocus = ValueNotifier(false);
   late final ValueNotifier<String> _content = ValueNotifier('');
   late final ValueNotifier<bool> _isKeyboardVisible = ValueNotifier(false)
-    ..addListener(() {
+    ..addListener(() async {
       if (!_isKeyboardVisible.value) {
+        await widget.onEditTask?.call(_contentController.text);
         _contentFocus.unfocus();
       }
     });
 
+  Timer? _contentDebounce;
+
   @override
   void dispose() {
     super.dispose();
+    _hasEditFocus.dispose();
     _contentFocus.dispose();
     _contentController.dispose();
-    _hasEditFocus.dispose();
     _content.dispose();
+    _contentDebounce?.cancel();
     WidgetsBinding.instance?.removeObserver(this);
   }
 
@@ -65,9 +68,7 @@ class _TaskViewListItemState extends State<TaskViewListItem>
     if (bottomInset != null) {
       final newValue = bottomInset > 0.0;
       if (newValue != _isKeyboardVisible.value) {
-        setState(() {
-          _isKeyboardVisible.value = newValue;
-        });
+        _isKeyboardVisible.value = newValue;
       }
     }
   }
@@ -110,24 +111,34 @@ class _TaskViewListItemState extends State<TaskViewListItem>
           Expanded(
             child: GestureDetector(
               onLongPress: () {},
-              child: TextFormField(
-                focusNode: _contentFocus,
-                controller: _contentController,
-                onEditingComplete: () {
-                  widget.onEditTask?.call(_contentController.text);
-                },
-                onFieldSubmitted: (text) {
-                  widget.onEditTask?.call(text);
-                  _contentFocus.unfocus();
-                },
-                style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                      decoration: widget.task.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
-                    ),
-                decoration: const InputDecoration(
-                  hintText: 'Изменить задание',
-                  border: InputBorder.none,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 250,
+                ),
+                child: TextFormField(
+                  focusNode: _contentFocus,
+                  controller: _contentController,
+                  maxLines: null,
+                  onEditingComplete: () {
+                    widget.onEditTask?.call(_contentController.text);
+                  },
+                  onChanged: _debounceOnChangeContent,
+                  onFieldSubmitted: (_) async {
+                    await widget.onEditTask?.call(_contentController.text);
+                    _contentFocus.unfocus();
+                  },
+                  style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                        decoration: widget.task.isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
+                  decoration: InputDecoration(
+                    hintText: 'Изменить задачу',
+                    hintStyle: Theme.of(context).textTheme.subtitle1?.copyWith(
+                          color: Colors.grey.shade400,
+                        ),
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
@@ -164,6 +175,16 @@ class _TaskViewListItemState extends State<TaskViewListItem>
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _debounceOnChangeContent(String text) async {
+    _contentDebounce?.cancel();
+    _contentDebounce = Timer(
+      const Duration(milliseconds: 300),
+      () async {
+        await widget.onEditTask?.call(_contentController.text);
+      },
     );
   }
 }

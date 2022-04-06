@@ -16,7 +16,7 @@ class DayTasksState {
 
 class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
   final EntityStateNotifier<DayTasksState> tasksState = EntityStateNotifier();
-  ValueNotifier<Set<DateTime>> datesContainingTasks = ValueNotifier({});
+  ValueNotifier<Set<DateTime>> datesContainingActiveTasks = ValueNotifier({});
 
   late PageController dayPageScrollController;
   late ScrollController daySelectionScrollController;
@@ -49,7 +49,7 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     final newState = DayTasksState(day, tasks);
 
     tasksState.content(newState);
-    datesContainingTasks.value = getDatesContainingTasks();
+    datesContainingActiveTasks.value = _getDatesContainingActiveTasks();
   }
 
   Future<void> createNewTask({
@@ -61,7 +61,7 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     await model.saveTask(task);
     final tasks = model.getTasksByDay(task.targetDate);
     tasksState.content(DayTasksState(task.targetDate, tasks));
-    datesContainingTasks.value = getDatesContainingTasks();
+    datesContainingActiveTasks.value = _getDatesContainingActiveTasks();
   }
 
   Future<void> editTask(Task task) async {
@@ -76,7 +76,7 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     await model.deleteTask(task);
     final tasks = model.getTasksByDay(task.targetDate);
     tasksState.content(DayTasksState(task.targetDate, tasks));
-    datesContainingTasks.value = getDatesContainingTasks();
+    datesContainingActiveTasks.value = _getDatesContainingActiveTasks();
   }
 
   Future<void> reorderTasks({
@@ -94,24 +94,6 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
 
     tasksState.content(DayTasksState(data.day, currentTasks));
     await model.saveAllTasks(currentTasks);
-  }
-
-  Set<DateTime> getDatesContainingTasks({
-    DateTime? begin,
-    DateTime? end,
-  }) {
-    final beginDate = begin ?? weekBeforeNow;
-    final endDate = end ?? weekAfterNow;
-
-    final all = model.getAllTasks();
-    final filtered = all
-        .where((e) {
-          return e.targetDate.isAfter(beginDate) &&
-              e.targetDate.isBefore(endDate);
-        })
-        .map((e) => e.targetDate.onlyDate)
-        .toSet();
-    return filtered;
   }
 
   void selectDay(DateTime day) {
@@ -135,6 +117,25 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
         : selectedDate.subtract(const Duration(days: 1));
 
     selectDay(targetDate);
+  }
+
+  Set<DateTime> _getDatesContainingActiveTasks({
+    DateTime? begin,
+    DateTime? end,
+  }) {
+    final beginDate = begin ?? weekBeforeNow;
+    final endDate = end ?? weekAfterNow;
+
+    final all = model.getAllTasks();
+    final filtered = all
+        .where((e) {
+          return e.targetDate.isAfter(beginDate) &&
+              e.targetDate.isBefore(endDate) &&
+              !e.isCompleted;
+        })
+        .map((e) => e.targetDate.onlyDate)
+        .toSet();
+    return filtered;
   }
 }
 

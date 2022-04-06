@@ -1,10 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:test_task/di.dart';
 import 'package:test_task/screens/main_screen.dart';
 
 void main() {
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+    systemNavigationBarColor: Colors.white,
+    systemNavigationBarDividerColor: Colors.white,
+    systemNavigationBarIconBrightness: Brightness.dark,
+    statusBarColor: Colors.white,
+    statusBarBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.dark,
+  ));
   runZonedGuarded(
     () async {
       final app = Injector(
@@ -13,6 +26,10 @@ void main() {
       await app.init();
       runApp(MaterialApp(
         home: app,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: const ColorScheme.light(),
+        ),
       ));
     },
     (error, stackTrace) {},

@@ -20,6 +20,7 @@ class DayButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.white,
       child: InkWell(
         borderRadius: BorderRadius.circular(6),
         onTap: onTap,
@@ -98,7 +99,7 @@ class DayButton extends StatelessWidget {
     return isSelected
         ? Theme.of(context).colorScheme.primary
         : _isToday
-            ? Colors.green.shade600
+            ? Colors.red.shade300
             : Colors.black87;
   }
 }

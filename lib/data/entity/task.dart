@@ -59,7 +59,9 @@ class Task {
         creationTime: creationTime,
         editTime: DateTime.now(),
         targetDate: targetDate,
-        content: content != null && content.isNotEmpty ? content : this.content,
+        content: content != null && content.isNotEmpty
+            ? content.trim()
+            : this.content.trim(),
         id: id,
         isCompleted: isCompleted ?? this.isCompleted,
       );

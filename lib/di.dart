@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:test_task/data/dto/task_hive_dto.dart';
 import 'package:test_task/data/hive_types.dart';

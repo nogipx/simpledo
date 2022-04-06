@@ -64,9 +64,12 @@ class _TaskCreationListItemState extends State<TaskCreationListItem> {
             child: TextFormField(
               focusNode: _contentFocus,
               controller: _contentController,
-              decoration: const InputDecoration(
-                hintText: 'Создать задание',
+              decoration: InputDecoration(
+                hintText: 'Создать задачу',
                 border: InputBorder.none,
+                hintStyle: Theme.of(context).textTheme.subtitle1?.copyWith(
+                      color: Colors.grey.shade400,
+                    ),
               ),
               onFieldSubmitted: (text) {
                 if (_hasCreationFocus.value) {

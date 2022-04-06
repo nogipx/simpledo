@@ -7,24 +7,29 @@ import 'package:test_task/screens/widgets/task_creation_list_item.dart';
 import 'package:test_task/screens/widgets/task_view_list_item.dart';
 
 class MainScreen extends ElementaryWidget<MainScreenWM> {
+  final int datesRadius;
+
   const MainScreen({
     WidgetModelFactory wmFactory = mainScreenWmFactory,
     Key? key,
+    this.datesRadius = 15,
   }) : super(wmFactory, key: key);
 
   @override
   Widget build(MainScreenWM wm) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: Column(
           children: [
+            const SizedBox(height: 20),
             SizedBox(
               height: 80,
               child: EntityStateNotifierBuilder<DayTasksState>(
                 listenableEntityState: wm.tasksState,
                 builder: (context, data) {
                   return ListView.separated(
-                    itemCount: 14,
+                    itemCount: datesRadius,
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     primary: false,
@@ -39,7 +44,7 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
                         day: day,
                         isSelected: data?.day.isSameDay(day) ?? false,
                         onTap: () => wm.selectDay(day),
-                        hasTasks: wm.datesContainingTasks.value
+                        hasTasks: wm.datesContainingActiveTasks.value
                             .contains(day.onlyDate),
                       );
                     },
@@ -49,7 +54,7 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
             ),
             Expanded(
               child: PageView.builder(
-                itemCount: 14,
+                itemCount: datesRadius,
                 controller: wm.dayPageScrollController,
                 physics: const BouncingScrollPhysics(),
                 allowImplicitScrolling: true,
