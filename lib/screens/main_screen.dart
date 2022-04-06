@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:test_task/helpers/date_time_extension.dart';
 import 'package:test_task/screens/main_screen_wm.dart';
 import 'package:test_task/screens/widgets/day_button.dart';
+import 'package:test_task/screens/widgets/task_creation_list_item.dart';
+import 'package:test_task/screens/widgets/task_view_list_item.dart';
 
 class MainScreen extends ElementaryWidget<MainScreenWM> {
   const MainScreen({
@@ -14,13 +16,6 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
   Widget build(MainScreenWM wm) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => wm.createNewTask(
-            content: '',
-            targetDate: wm.tasksState.value?.data?.day ?? DateTime.now(),
-          ),
-          child: const Icon(Icons.add),
-        ),
         body: Column(
           children: [
             SizedBox(
@@ -56,7 +51,7 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
               child: PageView.builder(
                 itemCount: 14,
                 controller: wm.dayPageScrollController,
-                physics: const ClampingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 allowImplicitScrolling: true,
                 onPageChanged: wm.onPageChanged,
                 itemBuilder: (context, index) {
@@ -68,25 +63,60 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
                     builder: (context, data) {
                       final tasks = data?.tasks ?? [];
                       if (tasks.isNotEmpty) {
-                        return ReorderableListView.builder(
-                          itemCount: tasks.length,
-                          onReorder: (o, n) async => wm.reorderTasks(
-                            oldPosition: o,
-                            newPosition: n,
+                        return SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              ReorderableListView.builder(
+                                itemCount: tasks.length,
+                                physics: const NeverScrollableScrollPhysics(),
+                                onReorder: (o, n) async => wm.reorderTasks(
+                                  oldPosition: o,
+                                  newPosition: n,
+                                ),
+                                primary: false,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  final task = tasks[index];
+                                  return TaskViewListItem(
+                                    key: ValueKey(task),
+                                    task: task,
+                                    onToggleComplete: (newState) async {
+                                      await wm.editTask(task.edit(
+                                        isCompleted: newState,
+                                      ));
+                                    },
+                                    onDeleteTask: () => wm.deleteTask(task),
+                                    onEditTask: (content) async {
+                                      await wm.editTask(task.edit(
+                                        content: content,
+                                      ));
+                                    },
+                                  );
+                                },
+                              ),
+                              TaskCreationListItem(
+                                onCreateTask: (content) => wm.createNewTask(
+                                  content: content,
+                                  targetDate: wm.tasksState.value?.data?.day ??
+                                      DateTime.now(),
+                                ),
+                              ),
+                            ],
                           ),
-                          primary: false,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            final task = tasks[index];
-                            return Padding(
-                              key: ValueKey(task),
-                              padding: const EdgeInsets.all(8),
-                              child: Text(task.id),
-                            );
-                          },
                         );
                       } else {
-                        return const Center(child: Text('no tasks'));
+                        return Column(
+                          children: [
+                            TaskCreationListItem(
+                              onCreateTask: (content) => wm.createNewTask(
+                                content: content,
+                                targetDate: wm.tasksState.value?.data?.day ??
+                                    DateTime.now(),
+                              ),
+                            ),
+                          ],
+                        );
                       }
                     },
                   );

@@ -32,7 +32,7 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     super.initWidgetModel();
     dayPageScrollController = PageController(initialPage: 7);
     daySelectionScrollController =
-        ScrollController(initialScrollOffset: 7 * 55);
+        ScrollController(initialScrollOffset: 7 * 50);
     pullDayTasks(now);
   }
 
@@ -118,7 +118,7 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     final dayPosition =
         weekBeforeNow.onlyDate.difference(day.onlyDate).inDays.abs();
     daySelectionScrollController.animateTo(
-      dayPosition * 55,
+      dayPosition * 51,
       curve: Curves.linearToEaseOut,
       duration: const Duration(milliseconds: 300),
     );
