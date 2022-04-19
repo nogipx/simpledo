@@ -75,9 +75,14 @@ class _TaskViewListItemState extends State<TaskViewListItem>
             builder: (context, hasFocus, _) {
               if (hasFocus) {
                 return InkWell(
-                  onTap: _contentController.clear,
+                  onTap: () {
+                    final currentFocus = FocusScope.of(context);
+                    if (!currentFocus.hasPrimaryFocus) {
+                      currentFocus.unfocus();
+                    }
+                  },
                   child: const Icon(
-                    Icons.clear,
+                    Icons.keyboard_hide_outlined,
                     color: Colors.grey,
                   ),
                 );
