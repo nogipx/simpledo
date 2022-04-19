@@ -122,6 +122,7 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
                         wm.tasksState.value?.data?.day ?? DateTime.now(),
                   ),
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           );

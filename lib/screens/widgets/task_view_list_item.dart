@@ -36,13 +36,6 @@ class _TaskViewListItemState extends State<TaskViewListItem>
 
   late final ValueNotifier<bool> _hasEditFocus = ValueNotifier(false);
   late final ValueNotifier<String> _content = ValueNotifier('');
-  late final ValueNotifier<bool> _isKeyboardVisible = ValueNotifier(false)
-    ..addListener(() async {
-      if (!_isKeyboardVisible.value) {
-        await widget.onEditTask?.call(_contentController.text);
-        _contentFocus.unfocus();
-      }
-    });
 
   Timer? _contentDebounce;
 
@@ -64,20 +57,10 @@ class _TaskViewListItemState extends State<TaskViewListItem>
   }
 
   @override
-  void onKeyboardVisibilityChange(bool isKeyboardHidden) {
+  Future<void> onKeyboardVisibilityChange(bool isKeyboardHidden) async {
     if (isKeyboardHidden) {
+      await widget.onEditTask?.call(_contentController.text);
       _contentFocus.unfocus();
-    }
-  }
-
-  @override
-  void didChangeMetrics() {
-    final bottomInset = WidgetsBinding.instance?.window.viewInsets.bottom;
-    if (bottomInset != null) {
-      final newValue = bottomInset > 0.0;
-      if (newValue != _isKeyboardVisible.value) {
-        _isKeyboardVisible.value = newValue;
-      }
     }
   }
 

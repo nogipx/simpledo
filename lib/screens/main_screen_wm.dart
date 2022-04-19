@@ -29,13 +29,6 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel>
 
   DateTime get now => DateTime.now();
 
-  Future<bool> get _keyboardHidden async {
-    bool check() =>
-        (WidgetsBinding.instance?.window.viewInsets.bottom ?? 0) <= 0;
-    if (!check()) return false;
-    return Future.delayed(const Duration(milliseconds: 100), check);
-  }
-
   MainScreenWM({
     required MainScreenModel model,
     required this.datesRadius,

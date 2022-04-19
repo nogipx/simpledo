@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 
 mixin KeyboardHelperMixin on WidgetsBindingObserver {
@@ -9,7 +11,7 @@ mixin KeyboardHelperMixin on WidgetsBindingObserver {
   }
 
   // ignore:avoid_positional_boolean_parameters
-  void onKeyboardVisibilityChange(bool isKeyboardHidden);
+  FutureOr<void> onKeyboardVisibilityChange(bool isKeyboardHidden);
 
   @override
   void didChangeMetrics() {
