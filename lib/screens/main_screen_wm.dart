@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:test_task/data/export.dart';
 import 'package:test_task/di.dart';
 import 'package:test_task/helpers/date_time_extension.dart';
+import 'package:test_task/helpers/keyboard_helper.dart';
 import 'package:test_task/screens/main_screel_model.dart';
 import 'package:test_task/screens/main_screen.dart';
 
@@ -14,18 +15,31 @@ class DayTasksState {
   DayTasksState(this.day, this._tasks);
 }
 
-class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
+class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel>
+    with WidgetsBindingObserver, KeyboardHelperMixin {
+  final int datesRadius;
+  late final DateTime startDay = now.subtract(Duration(days: datesRadius + 1));
+  late final DateTime endDay = now.add(Duration(days: datesRadius));
+  late final FocusNode taskCreationFocusNode = FocusNode();
+  late final PageController dayPageScrollController;
+  late final ScrollController daySelectionScrollController;
+
   final EntityStateNotifier<DayTasksState> tasksState = EntityStateNotifier();
   ValueNotifier<Set<DateTime>> datesContainingActiveTasks = ValueNotifier({});
 
-  late PageController dayPageScrollController;
-  late ScrollController daySelectionScrollController;
-
   DateTime get now => DateTime.now();
-  DateTime get weekBeforeNow => now.subtract(const Duration(days: 7));
-  DateTime get weekAfterNow => now.add(const Duration(days: 7));
 
-  MainScreenWM(MainScreenModel model) : super(model);
+  Future<bool> get _keyboardHidden async {
+    bool check() =>
+        (WidgetsBinding.instance?.window.viewInsets.bottom ?? 0) <= 0;
+    if (!check()) return false;
+    return Future.delayed(const Duration(milliseconds: 100), check);
+  }
+
+  MainScreenWM({
+    required MainScreenModel model,
+    required this.datesRadius,
+  }) : super(model);
 
   @override
   void initWidgetModel() {
@@ -33,7 +47,8 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     dayPageScrollController = PageController(initialPage: 7);
     daySelectionScrollController =
         ScrollController(initialScrollOffset: 7 * 50);
-    pullDayTasks(now);
+    _pullDayTasks(now);
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   @override
@@ -41,16 +56,51 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     super.dispose();
     dayPageScrollController.dispose();
     daySelectionScrollController.dispose();
+    taskCreationFocusNode.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
   }
 
-  void pullDayTasks(DateTime day) {
-    tasksState.loading(tasksState.value?.data);
-    final tasks = model.getTasksByDay(day);
-    final newState = DayTasksState(day, tasks);
-
-    tasksState.content(newState);
-    datesContainingActiveTasks.value = _getDatesContainingActiveTasks();
+  @override
+  void onKeyboardVisibilityChange(bool isKeyboardHidden) {
+    if (isKeyboardHidden) {
+      taskCreationFocusNode.unfocus();
+    }
   }
+
+  void nextDay() {
+    final currentDay = tasksState.value?.data?.day ?? now;
+    final targetDay = currentDay.add(const Duration(days: 1));
+    if (!targetDay.isAfter(endDay)) {
+      selectDay(targetDay);
+    }
+  }
+
+  void previousDay() {
+    final currentDay = tasksState.value?.data?.day ?? now;
+    final targetDay = currentDay.subtract(const Duration(days: 1));
+    if (!targetDay.isBefore(startDay)) {
+      selectDay(targetDay);
+    }
+  }
+
+  bool onScrollTaskDays(DragEndDetails info) {
+    final velocity = info.primaryVelocity ?? 0;
+    if (velocity > 300) {
+      previousDay();
+    } else if (velocity < -300) {
+      nextDay();
+    }
+    return true;
+  }
+
+  void dismissKeyboard() {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+  }
+
+  void focusToCreateTask() => taskCreationFocusNode.requestFocus();
 
   Future<void> createNewTask({
     required String content,
@@ -97,20 +147,14 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
   }
 
   void selectDay(DateTime day) {
-    final dayPosition =
-        weekBeforeNow.onlyDate.difference(day.onlyDate).inDays.abs();
-    daySelectionScrollController.animateTo(
-      dayPosition * 51,
-      curve: Curves.linearToEaseOut,
-      duration: const Duration(milliseconds: 300),
-    );
-    pullDayTasks(day);
+    _pullDayTasks(day);
+    taskCreationFocusNode.unfocus();
   }
 
   void onPageChanged(int page) {
     final selectedDate = tasksState.value?.data?.day;
     final dayPosition =
-        selectedDate!.onlyDate.difference(weekBeforeNow).inDays.abs();
+        selectedDate!.onlyDate.difference(startDay).inDays.abs();
     final diff = page - dayPosition;
     final targetDate = diff > 0
         ? selectedDate.add(const Duration(days: 1))
@@ -123,8 +167,8 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
     DateTime? begin,
     DateTime? end,
   }) {
-    final beginDate = begin ?? weekBeforeNow;
-    final endDate = end ?? weekAfterNow;
+    final beginDate = begin ?? startDay;
+    final endDate = end ?? endDay;
 
     final all = model.getAllTasks();
     final filtered = all
@@ -137,9 +181,24 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel> {
         .toSet();
     return filtered;
   }
+
+  void _pullDayTasks(DateTime day) {
+    tasksState.loading(tasksState.value?.data);
+    final tasks = model.getTasksByDay(day);
+    final newState = DayTasksState(day, tasks);
+
+    tasksState.content(newState);
+    datesContainingActiveTasks.value = _getDatesContainingActiveTasks();
+  }
 }
 
-MainScreenWM mainScreenWmFactory(BuildContext _) =>
-    MainScreenWM(MainScreenModel(
-      Injector.of(_).taskService,
-    ));
+MainScreenWM mainScreenWmFactory(
+  BuildContext _, {
+  int datesRadius = 2,
+}) =>
+    MainScreenWM(
+      datesRadius: datesRadius,
+      model: MainScreenModel(
+        Injector.of(_).taskService,
+      ),
+    );

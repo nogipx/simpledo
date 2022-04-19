@@ -11,12 +11,15 @@ void main() {
     DeviceOrientation.portraitDown,
   ]);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+    // iOS
+    statusBarColor: Colors.white,
+    statusBarBrightness: Brightness.light,
+
+    // Android
+    statusBarIconBrightness: Brightness.dark,
     systemNavigationBarColor: Colors.white,
     systemNavigationBarDividerColor: Colors.white,
     systemNavigationBarIconBrightness: Brightness.dark,
-    statusBarColor: Colors.white,
-    statusBarBrightness: Brightness.light,
-    statusBarIconBrightness: Brightness.light,
   ));
 
   WidgetsFlutterBinding.ensureInitialized();

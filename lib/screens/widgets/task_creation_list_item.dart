@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 class TaskCreationListItem extends StatefulWidget {
   final FutureOr<void> Function(String content)? onCreateTask;
+  final FocusNode? focusNode;
 
   const TaskCreationListItem({
     Key? key,
     this.onCreateTask,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -15,7 +17,7 @@ class TaskCreationListItem extends StatefulWidget {
 }
 
 class _TaskCreationListItemState extends State<TaskCreationListItem> {
-  late final FocusNode _contentFocus = FocusNode()
+  late final FocusNode _contentFocus = (widget.focusNode ?? FocusNode())
     ..addListener(() {
       _hasCreationFocus.value = _contentFocus.hasPrimaryFocus;
     });
@@ -30,7 +32,9 @@ class _TaskCreationListItemState extends State<TaskCreationListItem> {
   @override
   void dispose() {
     super.dispose();
-    _contentFocus.dispose();
+    if (widget.focusNode == null) {
+      _contentFocus.dispose();
+    }
     _contentController.dispose();
     _hasCreationFocus.dispose();
     _content.dispose();

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.nogipx.simpledo">
    <application
-        android:label="test_task"
+        android:label="SimpleDo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

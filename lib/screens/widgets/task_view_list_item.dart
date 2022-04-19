@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:test_task/data/export.dart';
+import 'package:test_task/helpers/keyboard_helper.dart';
 
 class TaskViewListItem extends StatefulWidget {
   final FutureOr<void> Function(String content)? onEditTask;
@@ -22,7 +23,7 @@ class TaskViewListItem extends StatefulWidget {
 }
 
 class _TaskViewListItemState extends State<TaskViewListItem>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, KeyboardHelperMixin {
   late final FocusNode _contentFocus = FocusNode()
     ..addListener(() {
       _hasEditFocus.value = _contentFocus.hasFocus;
@@ -60,6 +61,13 @@ class _TaskViewListItemState extends State<TaskViewListItem>
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void onKeyboardVisibilityChange(bool isKeyboardHidden) {
+    if (isKeyboardHidden) {
+      _contentFocus.unfocus();
+    }
   }
 
   @override
