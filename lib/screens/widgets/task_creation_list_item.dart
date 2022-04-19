@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:simpledo/helpers/date_time_extension.dart';
 
 class TaskCreationListItem extends StatefulWidget {
   final FutureOr<void> Function(String content)? onCreateTask;
@@ -68,8 +69,9 @@ class _TaskCreationListItemState extends State<TaskCreationListItem> {
             child: TextFormField(
               focusNode: _contentFocus,
               controller: _contentController,
+              textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
-                hintText: 'Создать задачу',
+                hintText: deviceLanguage == 'ru' ? 'Новая задача' : 'New task',
                 border: InputBorder.none,
                 hintStyle: Theme.of(context).textTheme.subtitle1?.copyWith(
                       color: Colors.grey.shade400,

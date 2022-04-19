@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:simpledo/data/export.dart';
+import 'package:simpledo/helpers/date_time_extension.dart';
 import 'package:simpledo/helpers/keyboard_helper.dart';
 
 class TaskViewListItem extends StatefulWidget {
@@ -114,10 +115,10 @@ class _TaskViewListItemState extends State<TaskViewListItem>
                 child: TextFormField(
                   focusNode: _contentFocus,
                   controller: _contentController,
-                  maxLines: null,
                   onEditingComplete: () {
                     widget.onEditTask?.call(_contentController.text);
                   },
+                  textCapitalization: TextCapitalization.sentences,
                   onChanged: _debounceOnChangeContent,
                   onFieldSubmitted: (_) async {
                     await widget.onEditTask?.call(_contentController.text);
@@ -129,7 +130,9 @@ class _TaskViewListItemState extends State<TaskViewListItem>
                             : null,
                       ),
                   decoration: InputDecoration(
-                    hintText: 'Изменить задачу',
+                    hintText: deviceLanguage == 'ru'
+                        ? 'Изменить задачу'
+                        : 'Edit task',
                     hintStyle: Theme.of(context).textTheme.subtitle1?.copyWith(
                           color: Colors.grey.shade400,
                         ),

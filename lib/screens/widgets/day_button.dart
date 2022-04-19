@@ -81,7 +81,7 @@ class DayButton extends StatelessWidget {
               if (_isToday) ...[
                 const SizedBox(height: 4),
                 Text(
-                  'сегодня',
+                  deviceLanguage == 'ru' ? 'сегодня' : 'today',
                   style: Theme.of(context).textTheme.caption?.copyWith(
                         // color: _textColor(context),
                         fontSize: 10,
