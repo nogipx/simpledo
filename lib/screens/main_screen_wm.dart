@@ -18,8 +18,10 @@ class DayTasksState {
 class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel>
     with WidgetsBindingObserver, KeyboardHelperMixin {
   final int datesRadius;
-  late final DateTime startDay = now.subtract(Duration(days: datesRadius + 1));
-  late final DateTime endDay = now.add(Duration(days: datesRadius));
+  late final DateTime startDay =
+      now.subtract(Duration(days: datesRadius)).onlyDate;
+  late final DateTime endDay =
+      now.add(Duration(days: datesRadius + 1)).onlyDate;
   late final FocusNode taskCreationFocusNode = FocusNode();
   late final PageController dayPageScrollController;
   late final ScrollController daySelectionScrollController;
