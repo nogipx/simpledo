@@ -7,6 +7,8 @@ import 'package:simpledo/di.dart';
 import 'package:simpledo/screens/main_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   unawaited(SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -24,8 +26,6 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
-  WidgetsFlutterBinding.ensureInitialized();
-
   final app = Injector(
     child: const MainScreen(),
   );
@@ -35,9 +35,6 @@ Future<void> main() async {
     (options) {
       options.dsn =
           'https://9360e7b51272491188937f9fd92bed0e@o358023.ingest.sentry.io/6346375';
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      // options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(
       MaterialApp(
