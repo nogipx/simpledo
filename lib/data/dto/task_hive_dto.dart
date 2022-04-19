@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:test_task/data/entity/task.dart';
-import 'package:test_task/data/hive_types.dart';
+import 'package:simpledo/data/entity/task.dart';
+import 'package:simpledo/data/hive_types.dart';
 
 part 'task_hive_dto.g.dart';
 

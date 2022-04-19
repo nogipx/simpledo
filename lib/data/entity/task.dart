@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'package:test_task/data/dto/task_hive_dto.dart';
+import 'package:simpledo/data/dto/task_hive_dto.dart';
 import 'package:uuid/uuid.dart';
 
 @immutable

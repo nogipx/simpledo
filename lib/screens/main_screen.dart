@@ -1,11 +1,11 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:test_task/helpers/date_time_extension.dart';
-import 'package:test_task/screens/main_screen_wm.dart';
-import 'package:test_task/screens/widgets/day_button.dart';
-import 'package:test_task/screens/widgets/task_creation_list_item.dart';
-import 'package:test_task/screens/widgets/task_view_list_item.dart';
+import 'package:simpledo/helpers/date_time_extension.dart';
+import 'package:simpledo/screens/main_screen_wm.dart';
+import 'package:simpledo/screens/widgets/day_button.dart';
+import 'package:simpledo/screens/widgets/task_creation_list_item.dart';
+import 'package:simpledo/screens/widgets/task_view_list_item.dart';
 
 class MainScreen extends ElementaryWidget<MainScreenWM> {
   final int datesRadius;

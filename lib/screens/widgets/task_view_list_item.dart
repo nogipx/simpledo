@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:test_task/data/export.dart';
-import 'package:test_task/helpers/keyboard_helper.dart';
+import 'package:simpledo/data/export.dart';
+import 'package:simpledo/helpers/keyboard_helper.dart';
 
 class TaskViewListItem extends StatefulWidget {
   final FutureOr<void> Function(String content)? onEditTask;

@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:test_task/data/dto/task_hive_dto.dart';
-import 'package:test_task/data/export.dart';
-import 'package:test_task/helpers/date_time_extension.dart';
+import 'package:simpledo/data/dto/task_hive_dto.dart';
+import 'package:simpledo/data/export.dart';
+import 'package:simpledo/helpers/date_time_extension.dart';
 
 class TaskService {
   final Box<TaskHiveDto> _taskBox;

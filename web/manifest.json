@@ -1,6 +1,6 @@
 {
-    "name": "test_task",
-    "short_name": "test_task",
+    "name": "simpledo",
+    "short_name": "simpledo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

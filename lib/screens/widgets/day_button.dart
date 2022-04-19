@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_task/helpers/date_time_extension.dart';
+import 'package:simpledo/helpers/date_time_extension.dart';
 
 class DayButton extends StatelessWidget {
   final VoidCallback? onTap;

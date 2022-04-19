@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:test_task/data/dto/task_hive_dto.dart';
-import 'package:test_task/data/hive_types.dart';
-import 'package:test_task/services/task_service.dart';
+import 'package:simpledo/data/dto/task_hive_dto.dart';
+import 'package:simpledo/data/hive_types.dart';
+import 'package:simpledo/services/task_service.dart';
 
 class Injector extends InheritedWidget {
   TaskService get taskService => _taskService;

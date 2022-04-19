@@ -1,11 +1,11 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
-import 'package:test_task/data/export.dart';
-import 'package:test_task/di.dart';
-import 'package:test_task/helpers/date_time_extension.dart';
-import 'package:test_task/helpers/keyboard_helper.dart';
-import 'package:test_task/screens/main_screel_model.dart';
-import 'package:test_task/screens/main_screen.dart';
+import 'package:simpledo/data/export.dart';
+import 'package:simpledo/di.dart';
+import 'package:simpledo/helpers/date_time_extension.dart';
+import 'package:simpledo/helpers/keyboard_helper.dart';
+import 'package:simpledo/screens/main_screel_model.dart';
+import 'package:simpledo/screens/main_screen.dart';
 
 class DayTasksState {
   final DateTime day;

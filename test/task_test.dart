@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:test_task/data/dto/task_hive_dto.dart';
-import 'package:test_task/data/entity/task.dart';
+import 'package:simpledo/data/dto/task_hive_dto.dart';
+import 'package:simpledo/data/entity/task.dart';
 
 void main() {
   group('Task', () {

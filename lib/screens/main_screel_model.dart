@@ -1,6 +1,6 @@
 import 'package:elementary/elementary.dart';
-import 'package:test_task/data/export.dart';
-import 'package:test_task/services/task_service.dart';
+import 'package:simpledo/data/export.dart';
+import 'package:simpledo/services/task_service.dart';
 
 class MainScreenModel extends ElementaryModel {
   final TaskService _taskService;
