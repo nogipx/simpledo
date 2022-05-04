@@ -96,10 +96,16 @@ class DayButton extends StatelessWidget {
   }
 
   Color _textColor(BuildContext context) {
-    return isSelected
-        ? Theme.of(context).colorScheme.primary
-        : _isToday
-            ? Colors.red.shade300
-            : Colors.black87;
+    if (isSelected) {
+      return Theme.of(context).colorScheme.primary;
+    }
+    if (_isToday) {
+      return Theme.of(context).colorScheme.primary.withAlpha(130);
+      return Colors.indigo.shade400;
+    }
+    if (day.weekday > 5) {
+      return Colors.red.shade300;
+    }
+    return Colors.black87;
   }
 }

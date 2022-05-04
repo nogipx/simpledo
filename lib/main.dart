@@ -6,10 +6,11 @@ import 'package:simpledo/di.dart';
 import 'package:simpledo/screens/main_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   unawaited(SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]);
+  ]));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
     // iOS
     statusBarColor: Colors.white,
@@ -22,8 +23,7 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
-  WidgetsFlutterBinding.ensureInitialized();
-  runZonedGuarded(
+  await runZonedGuarded(
     () async {
       final app = Injector(
         child: const MainScreen(),

@@ -18,10 +18,13 @@ class DayTasksState {
 class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel>
     with WidgetsBindingObserver, KeyboardHelperMixin {
   final int datesRadius;
+
   late final DateTime startDay =
       now.subtract(Duration(days: datesRadius)).onlyDate;
+
   late final DateTime endDay =
       now.add(Duration(days: datesRadius + 1)).onlyDate;
+
   late final FocusNode taskCreationFocusNode = FocusNode();
   late final PageController dayPageScrollController;
   late final ScrollController daySelectionScrollController;
@@ -142,7 +145,9 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel>
   }
 
   void selectDay(DateTime day) {
-    _pullDayTasks(day);
+    if (tasksState.value?.data?.day != day) {
+      _pullDayTasks(day);
+    }
     taskCreationFocusNode.unfocus();
   }
 

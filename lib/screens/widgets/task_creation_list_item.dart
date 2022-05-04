@@ -80,6 +80,7 @@ class _TaskCreationListItemState extends State<TaskCreationListItem> {
               onFieldSubmitted: (text) {
                 if (_hasCreationFocus.value) {
                   widget.onCreateTask?.call(text);
+                  _contentController.text = '';
                 }
               },
             ),

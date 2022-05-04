@@ -1,23 +1,19 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
-import 'package:simpledo/helpers/date_time_extension.dart';
 import 'package:simpledo/screens/main_screen_wm.dart';
-import 'package:simpledo/screens/widgets/day_button.dart';
+import 'package:simpledo/screens/widgets/days_selection/radius_days_selection.dart';
+import 'package:simpledo/screens/widgets/days_selection/week_days_selection.dart';
 import 'package:simpledo/screens/widgets/task_creation_list_item.dart';
 import 'package:simpledo/screens/widgets/task_view_list_item.dart';
 
 class MainScreen extends ElementaryWidget<MainScreenWM> {
-  final int datesRadius;
-
   const MainScreen({
     WidgetModelFactory wmFactory = mainScreenWmFactory,
     Key? key,
-    this.datesRadius = 2,
   }) : super(wmFactory, key: key);
 
   @override
   Widget build(MainScreenWM wm) {
-    final daysCount = datesRadius * 2 + 1;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -29,33 +25,21 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
               child: EntityStateNotifierBuilder<DayTasksState>(
                 listenableEntityState: wm.tasksState,
                 builder: (context, data) {
-                  final start = wm.now.subtract(Duration(days: datesRadius));
-                  return NotificationListener<OverscrollIndicatorNotification>(
-                    onNotification: (_) {
-                      _.disallowIndicator();
-                      return true;
-                    },
-                    child: ListView.separated(
-                      itemCount: daysCount,
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      primary: false,
-                      physics: const ClampingScrollPhysics(),
-                      controller: wm.daySelectionScrollController,
-                      separatorBuilder: (_, __) => const SizedBox(width: 4),
-                      itemBuilder: (context, index) {
-                        final day = start.add(Duration(days: index));
-
-                        return DayButton(
-                          key: ValueKey(day),
-                          day: day,
-                          isSelected: data?.day.isSameDay(day) ?? false,
-                          onTap: () => wm.selectDay(day),
-                          hasTasks: wm.datesContainingActiveTasks.value
-                              .contains(day.onlyDate),
-                        );
-                      },
-                    ),
+                  return WeekDaysSelection(
+                    scrollController: wm.daySelectionScrollController,
+                    selectedDay: data?.day,
+                    onSelectDay: wm.selectDay,
+                    dayHasTasksPredicate:
+                        wm.datesContainingActiveTasks.value.contains,
+                  );
+                  return RadiusDaysSelection(
+                    daysRadius: 2,
+                    scrollController: wm.daySelectionScrollController,
+                    startDay: wm.now,
+                    selectedDay: data?.day,
+                    onSelectDay: wm.selectDay,
+                    dayHasTasksPredicate:
+                        wm.datesContainingActiveTasks.value.contains,
                   );
                 },
               ),
@@ -65,7 +49,35 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
                 onHorizontalDragEnd: wm.onScrollTaskDays,
                 onTap: wm.dismissKeyboard,
                 onDoubleTap: wm.focusToCreateTask,
-                child: _buildDayTasks(wm),
+                child: _DayTasks(wm: wm),
+              ),
+            ),
+            GestureDetector(
+              onHorizontalDragEnd: wm.onScrollTaskDays,
+              onTap: wm.dismissKeyboard,
+              onDoubleTap: wm.focusToCreateTask,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.info_outline,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.settings_rounded,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -73,8 +85,18 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
       ),
     );
   }
+}
 
-  Widget _buildDayTasks(MainScreenWM wm) {
+class _DayTasks extends StatelessWidget {
+  final MainScreenWM wm;
+
+  const _DayTasks({
+    required this.wm,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return EntityStateNotifierBuilder<DayTasksState>(
       listenableEntityState: wm.tasksState,
       builder: (context, data) {

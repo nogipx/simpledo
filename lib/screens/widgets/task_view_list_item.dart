@@ -115,8 +115,8 @@ class _TaskViewListItemState extends State<TaskViewListItem>
                 child: TextFormField(
                   focusNode: _contentFocus,
                   controller: _contentController,
-                  onEditingComplete: () {
-                    widget.onEditTask?.call(_contentController.text);
+                  onEditingComplete: () async {
+                    await widget.onEditTask?.call(_contentController.text);
                   },
                   textCapitalization: TextCapitalization.sentences,
                   onChanged: _debounceOnChangeContent,

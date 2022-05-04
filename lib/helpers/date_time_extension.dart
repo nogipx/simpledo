@@ -31,4 +31,14 @@ extension ExtDateTime on DateTime {
         return '';
     }
   }
+
+  DateTime get weekStartDay {
+    final weekStartDay = subtract(Duration(days: weekday - 1));
+    return weekStartDay.onlyDate;
+  }
+
+  DateTime get weekEndDay {
+    final weekStartDay = add(Duration(days: 7 - weekday));
+    return weekStartDay.onlyDate;
+  }
 }
