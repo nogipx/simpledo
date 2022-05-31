@@ -1,4 +1,6 @@
 import 'package:elementary/elementary.dart';
+import 'package:feature_core/feature_core.dart';
+import 'package:feature_flutter/feature_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:simpledo/data/export.dart';
 import 'package:simpledo/di.dart';
@@ -161,6 +163,24 @@ class MainScreenWM extends WidgetModel<MainScreen, MainScreenModel>
         : selectedDate.subtract(const Duration(days: 1));
 
     selectDay(targetDate);
+  }
+
+  void navigateFeaturesDebug() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black87,
+            ),
+            body: DebugFeaturesWidget(
+              manager: Features.I,
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Set<DateTime> _getDatesContainingActiveTasks({

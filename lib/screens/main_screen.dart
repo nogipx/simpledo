@@ -1,5 +1,9 @@
 import 'package:elementary/elementary.dart';
+import 'package:feature_flutter/feature_flutter.dart';
+import 'package:feature_source_firebase/feature_source_firebase.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:simpledo/features.dart';
 import 'package:simpledo/screens/main_screen_wm.dart';
 import 'package:simpledo/screens/widgets/days_selection/radius_days_selection.dart';
 import 'package:simpledo/screens/widgets/days_selection/week_days_selection.dart';
@@ -25,21 +29,29 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
               child: EntityStateNotifierBuilder<DayTasksState>(
                 listenableEntityState: wm.tasksState,
                 builder: (context, data) {
-                  return WeekDaysSelection(
-                    scrollController: wm.daySelectionScrollController,
-                    selectedDay: data?.day,
-                    onSelectDay: wm.selectDay,
-                    dayHasTasksPredicate:
-                        wm.datesContainingActiveTasks.value.contains,
-                  );
-                  return RadiusDaysSelection(
-                    daysRadius: 2,
-                    scrollController: wm.daySelectionScrollController,
-                    startDay: wm.now,
-                    selectedDay: data?.day,
-                    onSelectDay: wm.selectDay,
-                    dayHasTasksPredicate:
-                        wm.datesContainingActiveTasks.value.contains,
+                  return FeatureWidget.builder(
+                    feature: Features.getFeatureByType<UseWeekDaysToggle>(),
+                    builder: (context, feature) {
+                      if (feature?.enabled ?? false) {
+                        return WeekDaysSelection(
+                          scrollController: wm.daySelectionScrollController,
+                          selectedDay: data?.day,
+                          onSelectDay: wm.selectDay,
+                          dayHasTasksPredicate:
+                              wm.datesContainingActiveTasks.value.contains,
+                        );
+                      } else {
+                        return RadiusDaysSelection(
+                          daysRadius: 2,
+                          scrollController: wm.daySelectionScrollController,
+                          startDay: wm.now,
+                          selectedDay: data?.day,
+                          onSelectDay: wm.selectDay,
+                          dayHasTasksPredicate:
+                              wm.datesContainingActiveTasks.value.contains,
+                        );
+                      }
+                    },
                   );
                 },
               ),
@@ -69,6 +81,14 @@ class MainScreen extends ElementaryWidget<MainScreenWM> {
                         color: Colors.grey,
                       ),
                     ),
+                    if (kDebugMode)
+                      IconButton(
+                        onPressed: wm.navigateFeaturesDebug,
+                        icon: const Icon(
+                          Icons.settings_input_component,
+                          color: Colors.grey,
+                        ),
+                      ),
                     IconButton(
                       onPressed: () {},
                       icon: const Icon(
